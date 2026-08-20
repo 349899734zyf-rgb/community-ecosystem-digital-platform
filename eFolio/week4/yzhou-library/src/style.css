@@ -1,0 +1,28 @@
+/* 1. Tag Selector (标签选择器)：为所有 <h1> 标题添加文字居中、顶部外边距和文字阴影 */
+h1 {
+  text-align: center;
+  margin-top: 20px;
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.5);
+}
+
+/* 2. Class Selector (类选择器)：为 class="form" 的表单容器设置居中与 50px 顶部边距 */
+.form {
+  text-align: center;
+  margin-top: 50px;
+}
+
+/* 3. ID Selectors & :focus Pseudo-class (ID 选择器与 :focus 伪类)：
+   当用户点击/聚焦在指定 ID 的输入框时，边框变为番茄红 (#FF6347)，背景变为浅粉色 (#FFEBE8) */
+#username:focus,
+#password:focus,
+#isAustralian:focus,
+#reason:focus {
+  border: 2px solid #FF6347; /* 显式指定 2px 实线番茄红边框 */
+  outline: none;             /* 关键：去掉浏览器自带的黑色外轮廓线 */
+  background-color: #FFEBE8; /* 浅粉色背景 */
+}
+
+/* 4. Attribute Selectors (属性选择器)：精准找到 id="gender" 的下拉选择框，设置浅灰色背景 */
+select[id="gender"] {
+  background-color: #d3d3d3;
+}
