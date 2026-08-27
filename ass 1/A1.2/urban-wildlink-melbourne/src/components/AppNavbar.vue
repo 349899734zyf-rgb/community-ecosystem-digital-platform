@@ -1,13 +1,20 @@
+<!--
+  References & Acknowledgements:
+  - Component Reference: Bootstrap 5.3 Navbar & Responsive Collapse (https://getbootstrap.com/docs/5.3/components/navbar/)
+  - Icons: Bootstrap Icons (https://icons.getbootstrap.com/)
+  - Routing: Vue Router 4 (createRouter, RouterLink)
+-->
+
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-success sticky-top shadow-sm">
     <div class="container">
-      <!-- 品牌 Logo -->
+      <!-- Brand Logo -->
       <router-link to="/" class="navbar-brand d-flex align-items-center fw-bold">
         <i class="bi bi-tree-fill text-warning me-2 fs-4"></i>
         <span>Urban WildLink Melbourne</span>
       </router-link>
 
-      <!-- 移动端汉堡菜单折叠按钮 (BR A.2 响应式关键) -->
+      <!-- Mobile Responsive Hamburger Toggler (BR A.2) -->
       <button 
         class="navbar-toggler" 
         type="button" 
@@ -20,7 +27,7 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- 导航页面链接 -->
+      <!-- Navigation Links -->
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav ms-auto align-items-lg-center">
           <li class="nav-item">
@@ -38,6 +45,13 @@
               <i class="bi bi-heart me-1"></i> Adopt Plants
             </router-link>
           </li>
+
+          <!-- Independent Admin console entry point -->
+          <li class="nav-item">
+            <router-link to="/admin" class="nav-link px-3" active-class="active fw-bold">
+              <i class="bi bi-shield-lock me-1"></i> Admin Console
+            </router-link>
+          </li>
           <li class="nav-item">
             <router-link to="/about" class="nav-link px-3" active-class="active fw-bold">
               <i class="bi bi-info-circle me-1"></i> About
@@ -50,6 +64,7 @@
 </template>
 
 <script setup>
+import { plantStore } from '../store/plantStore'
 </script>
 
 <style scoped>

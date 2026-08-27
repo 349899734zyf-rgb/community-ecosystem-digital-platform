@@ -1,14 +1,20 @@
+<!--
+  References & Acknowledgements:
+  - Framework: Vue 3 (Composition API) & Vite
+  - Layout Structure: Flexbox Sticky Footer Architecture (min-vh-100, flex-grow-1, mt-auto)
+-->
+
 <template>
-  <div class="d-flex flex-column min-vh-100 bg-light">
-    <!-- 顶部导航 -->
+  <div class="d-flex flex-column min-vh-100">
+    <!-- Top Navigation Bar -->
     <AppNavbar />
 
-    <!-- 路由页面主视口 -->
+    <!-- Router Viewport -->
     <main class="flex-grow-1">
       <router-view />
     </main>
 
-    <!-- 底部页脚 -->
+    <!-- Sticky Bottom Footer -->
     <AppFooter />
   </div>
 </template>
@@ -17,3 +23,7 @@
 import AppNavbar from './components/AppNavbar.vue'
 import AppFooter from './components/AppFooter.vue'
 </script>
+
+<style>
+/* Global stylesheet imported in main.js */
+</style>

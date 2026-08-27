@@ -1,7 +1,13 @@
+/*
+  References & Acknowledgements:
+  - Base Styles: Custom global CSS variables extending Bootstrap 5.3 theme
+  - Typography: Native clean system font stack
+*/
+
 :root {
   --bs-primary: #198754;
   --bs-primary-rgb: 25, 135, 84;
-  --bs-success: #20c997;
+  --bs-success: #198754;
   --theme-bg-subtle: #f4fbf7;
 }
 
@@ -28,12 +34,7 @@ body {
   background-color: #198754 !important;
 }
 
+/* Static clean card styling without hover translation */
 .card {
-  border-radius: 12px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08) !important;
+  border-radius: 8px;
 }

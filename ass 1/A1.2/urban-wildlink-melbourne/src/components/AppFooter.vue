@@ -1,8 +1,14 @@
+<!--
+  References & Acknowledgements:
+  - Layout Reference: Bootstrap 5.3 Sticky Footer & Responsive Grid (https://getbootstrap.com/docs/5.3/examples/footers/)
+  - Icons: Bootstrap Icons (https://icons.getbootstrap.com/)
+-->
+
 <template>
   <footer class="bg-dark text-white pt-4 pb-3 mt-auto">
     <div class="container">
       <div class="row g-4">
-        <!-- 第 1 列：机构简述 (桌面4列，手机12列) -->
+        <!-- Column 1: Organization Summary -->
         <div class="col-12 col-md-5">
           <h5 class="text-success fw-bold">
             <i class="bi bi-tree-fill text-warning me-2"></i>Urban WildLink Melbourne
@@ -12,7 +18,7 @@
           </p>
         </div>
 
-        <!-- 第 2 列：快速导航链接 (桌面3列，手机6列) -->
+        <!-- Column 2: Quick Navigation Links (Desktop 3 Columns, Mobile 6 Columns) -->
         <div class="col-6 col-md-3">
           <h6 class="text-white fw-bold mb-2">Quick Links</h6>
           <ul class="list-unstyled small text-secondary mb-0">
@@ -23,19 +29,19 @@
           </ul>
         </div>
 
-        <!-- 第 3 列：联系方式 (桌面4列，手机6列) -->
+        <!-- Column 3: Contact Information (Desktop 4 Columns, Mobile 6 Columns) -->
         <div class="col-6 col-md-4">
           <h6 class="text-white fw-bold mb-2">Contact</h6>
           <ul class="list-unstyled small text-secondary mb-0">
             <li class="mb-1"><i class="bi bi-geo-alt me-1 text-success"></i> Melbourne, VIC, Australia</li>
-            <li class="mb-1"><i class="bi bi-envelope me-1 text-success"></i> info@urbanwildlink.org.au</li>
+            <li class="mb-1"><i class="bi bi-envelope me-1 text-success"></i> yzho0348@student.monash.edu</li>
           </ul>
         </div>
       </div>
 
       <hr class="border-secondary my-3 opacity-25">
 
-      <!-- 版权信息 -->
+      <!-- Copyright Information -->
       <div class="text-center text-secondary small">
         © 2026 Urban WildLink Melbourne. FIT5032 Internet Applications Development.
       </div>
