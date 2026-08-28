@@ -20,7 +20,7 @@
             </p>
             <div>
               <router-link to="/catalog" class="btn btn-warning btn-lg fw-bold px-4 shadow-sm">
-                <i class="bi bi-flower1 me-1"></i> Explore Native Flora Catalog
+                Explore Native Flora Catalog<i class="bi bi-arrow-right ms-1"></i>
               </router-link>
             </div>
           </div>
@@ -71,7 +71,7 @@
         <!-- Plant 1: Golden Wattle -->
         <div class="col-12 col-md-6 col-lg-4">
           <div class="card h-100 border-0 overflow-hidden">
-            <div style="height: 180px;" class="overflow-hidden bg-light">
+            <div style="height: 300px;" class="overflow-hidden bg-light">
               <img 
                 src="https://cdn.sci.news/images/enlarge10/image_11399e-Acacia-pycnantha.jpg" 
                 alt="Golden Wattle (Acacia pycnantha)" 
@@ -82,15 +82,15 @@
             <div class="card-body d-flex flex-column p-4">
               <div class="d-flex justify-content-between align-items-start mb-2">
                 <h5 class="card-title fw-bold text-success mb-0">Golden Wattle</h5>
-                <span class="badge bg-success bg-opacity-10 text-success">Tree / Shrub</span>
+                <span class="badge bg-success bg-opacity-10 text-success">Tree</span>
               </div>
               <p class="text-muted small fst-italic mb-2">Acacia pycnantha</p>
               <p class="card-text text-secondary small mb-3">
                 Australia's national floral emblem. Offers dense golden blooms that provide vital winter pollen for native bees and seed food for parrots.
               </p>
               <div class="mt-auto d-flex flex-wrap gap-1">
-                <span class="badge bg-light text-dark border">Full Sun</span>
-                <span class="badge bg-light text-dark border">Attracts Pollinators</span>
+                <span class="badge bg-light text-dark">Full Sun</span>
+                <span class="badge bg-light text-dark">Attracts Pollinators</span>
               </div>
             </div>
           </div>
@@ -99,7 +99,7 @@
         <!-- Plant 2: Silver Banksia -->
         <div class="col-12 col-md-6 col-lg-4">
           <div class="card h-100 border-0 overflow-hidden">
-            <div style="height: 180px;" class="overflow-hidden bg-light">
+            <div style="height: 300px;" class="overflow-hidden bg-light">
             <img 
               src="https://www.plantsforspaces.com.au/wp-content/uploads/2021/06/0242832_banksia-marginata-30cm.jpg" 
               alt="Silver Banksia (Banksia marginata)" 
@@ -117,8 +117,8 @@
                 Hardy Melbourne indigenous Banksia producing yellow cylindrical cones rich in nectar for honeyeaters, lorikeets, and sugar gliders.
               </p>
               <div class="mt-auto d-flex flex-wrap gap-1">
-                <span class="badge bg-light text-dark border">Drought Tolerant</span>
-                <span class="badge bg-light text-dark border">Bird Haven</span>
+                <span class="badge bg-light text-dark">Drought Tolerant</span>
+                <span class="badge bg-light text-dark">Bird Haven</span>
               </div>
             </div>
           </div>
@@ -127,7 +127,7 @@
         <!-- Plant 3: Common Correa -->
         <div class="col-12 col-md-12 col-lg-4">
           <div class="card h-100 border-0 overflow-hidden">
-            <div style="height: 180px;" class="overflow-hidden bg-light">
+            <div style="height: 300px;" class="overflow-hidden bg-light">
               <img 
                 src="https://garden.org/pics/2017-12-08/carolem/5ea1c7.jpg" 
                 alt="Golden Wattle (Acacia pycnantha)" 
@@ -145,8 +145,8 @@
                 Known as the Native Fuchsia. Features pendulous bell flowers that bloom from autumn through winter, ideal for shaded garden beds.
               </p>
               <div class="mt-auto d-flex flex-wrap gap-1">
-                <span class="badge bg-light text-dark border">Partial Shade</span>
-                <span class="badge bg-light text-dark border">Nectar Rich</span>
+                <span class="badge bg-light text-dark">Partial Shade</span>
+                <span class="badge bg-light text-dark">Nectar Rich</span>
               </div>
             </div>
           </div>
@@ -164,9 +164,9 @@
               Urban development has fragmented natural habitats into isolated patches. By planting indigenous flora in private gardens, Melbourne residents create continuous "stepping stones" that allow wildlife to safely navigate and feed across the suburbs.
             </p>
             <ul class="list-unstyled small text-secondary mb-0">
-              <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Conserves groundwater through climate-adapted root systems</li>
-              <li class="mb-2"><i class="bi bi-check-circle text-success me-2"></i>Provides essential nectar during winter food scarcity</li>
-              <li class="mb-0"><i class="bi bi-check-circle text-success me-2"></i>Reduces urban heat island effect across local suburbs</li>
+              <li class="mb-2">Conserves groundwater through climate-adapted root systems</li>
+              <li class="mb-2">Provides essential nectar during winter food scarcity</li>
+              <li class="mb-0">Reduces urban heat island effect across local suburbs</li>
             </ul>
           </div>
 
@@ -177,7 +177,7 @@
             </p>
             <div class="mt-auto">
               <p class="text-secondary small mb-3">
-                <i class="bi bi-info-circle text-success me-2"></i>Each eligible household can request up to 5 free indigenous seedlings per planting season.
+                Each eligible household can request up to 5 free indigenous seedlings per planting season.
               </p>
               <router-link to="/adopt" class="btn btn-success w-100 fw-bold">
                 Submit Plant Adoption Request <i class="bi bi-arrow-right ms-1"></i>

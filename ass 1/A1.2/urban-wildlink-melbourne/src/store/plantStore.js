@@ -11,6 +11,7 @@ import { initialPlants } from '../data/initialPlants'
 const PLANTS_STORAGE_KEY = 'urban_wildlink_plants_v2'
 const APPLICATIONS_STORAGE_KEY = 'urban_wildlink_applications_v2'
 const PROPOSALS_STORAGE_KEY = 'urban_wildlink_species_proposals_v2'
+const ADMIN_AUTH_KEY = 'urban_wildlink_is_admin'
 
 const defaultApplications = [
   {
@@ -64,7 +65,9 @@ function loadData(key, fallback) {
   return JSON.parse(JSON.stringify(fallback))
 }
 
+// Global Reactive State
 const state = reactive({
+  isAdmin: localStorage.getItem(ADMIN_AUTH_KEY) === 'true',
   plants: loadData(PLANTS_STORAGE_KEY, initialPlants),
   applications: loadData(APPLICATIONS_STORAGE_KEY, defaultApplications),
   speciesProposals: loadData(PROPOSALS_STORAGE_KEY, defaultProposals)
@@ -79,7 +82,22 @@ function saveAll() {
 export const plantStore = {
   state,
 
-  // 1. Submit adoption application
+  // Section 1: Administrator Authentication
+  loginAdmin(passcode) {
+    if (passcode === 'admin123') {
+      state.isAdmin = true
+      localStorage.setItem(ADMIN_AUTH_KEY, 'true')
+      return { success: true, message: 'Authentication successful! Welcome, Administrator.' }
+    }
+    return { success: false, message: 'Invalid admin passcode. (Hint: use admin123 for demo)' }
+  },
+
+  logoutAdmin() {
+    state.isAdmin = false
+    localStorage.removeItem(ADMIN_AUTH_KEY)
+  },
+
+  // Section 2: Resident Adoption Application Submission
   submitApplication(formData) {
     const plant = state.plants.find(p => p.id === formData.plantId)
     const newApp = {
@@ -100,12 +118,13 @@ export const plantStore = {
     return newApp
   },
 
-  // 2. Submit species suggestion
+  // Section 3: Resident Species Suggestion Submission
   submitSpeciesProposal(proposalData) {
     const newProposal = {
       id: `prop-${Date.now()}`,
       proposerName: proposalData.proposerName,
       email: proposalData.email,
+      imageUrl: proposalData.imageUrl || '', 
       plantName: proposalData.plantName,
       scientificName: proposalData.scientificName || 'Indigenous species',
       category: proposalData.category || 'Shrub',
@@ -119,7 +138,7 @@ export const plantStore = {
     return newProposal
   },
 
-  // 3. Restock inventory
+  // Section 4: Nursery Inventory Stock Control
   restockPlant(plantId, amount = 5) {
     const plant = state.plants.find(p => p.id === plantId)
     if (plant) {
@@ -130,7 +149,7 @@ export const plantStore = {
     return 0
   },
 
-  // 4. Add new species
+  // Section 5: Direct Species Registration
   addPlant(newPlantData) {
     const newPlant = {
       id: `plant-${Date.now()}`,
@@ -149,7 +168,43 @@ export const plantStore = {
     saveAll()
   },
 
-  // 5. Approve / reject proposals
+  // Reduce the inventory of specific plant seedlings (cannot be reduced to a negative number)
+  reducePlantStock(plantId, amount = 1) {
+    const plant = state.plants.find(p => p.id === plantId)
+    if (plant) {
+      plant.stock = Math.max(0, plant.stock - amount)
+      saveAll()
+      return plant.stock
+    }
+    return 0
+  },
+  // Completely delete a certain species variety
+  deletePlant(plantId) {
+    state.plants = state.plants.filter(p => p.id !== plantId)
+    saveAll()
+  },
+
+  // Update the information of existing species
+  updatePlant(updatedData) {
+    const index = state.plants.findIndex(p => p.id === updatedData.id)
+    if (index !== -1) {
+      state.plants[index] = {
+        ...state.plants[index],
+        name: updatedData.name,
+        scientificName: updatedData.scientificName,
+        imageUrl: updatedData.imageUrl,
+        category: updatedData.category,
+        stock: parseInt(updatedData.stock) || 0,
+        wildlifeBenefit: updatedData.wildlifeBenefit,
+        description: updatedData.description
+      }
+      saveAll()
+      return true
+    }
+    return false
+  },
+
+  // Section 6: Community Proposal Review Operations
   approveSpeciesProposal(proposalId) {
     const prop = state.speciesProposals.find(p => p.id === proposalId)
     if (prop && prop.status === 'Pending') {
@@ -157,6 +212,7 @@ export const plantStore = {
         id: `plant-${Date.now()}`,
         name: prop.plantName,
         scientificName: prop.scientificName,
+        imageUrl: prop.imageUrl || '',
         category: prop.category,
         sunExposure: 'Full Sun to Part Shade',
         waterNeeds: 'Low to Medium',
@@ -183,7 +239,7 @@ export const plantStore = {
     return false
   },
 
-  // 6. Approve / reject adoption applications
+  // Section 7: Adoption Application Review Operations
   approveApplication(appId) {
     const app = state.applications.find(a => a.id === appId)
     if (app && app.status === 'Pending') {
@@ -211,7 +267,7 @@ export const plantStore = {
     return false
   },
 
-  // 7. Reset utility
+  // Section 8: Dataset Reset Utility
   resetToDefault() {
     state.plants = JSON.parse(JSON.stringify(initialPlants))
     state.applications = JSON.parse(JSON.stringify(defaultApplications))
@@ -219,7 +275,7 @@ export const plantStore = {
     saveAll()
   },
 
-  // 8. Safe computed properties
+  // Section 9: Real-Time Summary Metric Getters
   get totalSpeciesCount() {
     return (state.plants || []).length
   },

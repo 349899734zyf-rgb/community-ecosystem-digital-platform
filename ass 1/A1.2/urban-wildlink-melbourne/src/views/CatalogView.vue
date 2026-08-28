@@ -11,15 +11,15 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
       <div>
         <h2 class="fw-bold text-success mb-1">
-          <i class="bi bi-flower1 me-2"></i>Native Flora Catalog
+          Native Flora Catalog
         </h2>
         <p class="text-muted small mb-0">
           Indigenous species available for Greater Melbourne backyard habitat creation.
         </p>
       </div>
 
-      <button class="btn btn-outline-success btn-sm fw-bold" @click="showProposalModal = true">
-        <i class="bi bi-lightbulb-fill text-warning me-1"></i> Suggest New Species
+      <button class="btn btn-success btn-sm fw-bold" @click="showProposalModal = true">
+        Suggest New Species
       </button>
     </div>
 
@@ -35,19 +35,19 @@
     <div class="mb-4">
       <div class="row g-3 align-items-center">
         <div class="col-12 col-md-6">
-          <div class="input-group">
-            <span class="input-group-text border-end-0"><i class="bi bi-search text-muted"></i></span>
+          <div class="input">
+            <span class="input-text bg-light"></span>
             <input 
               v-model="searchQuery" 
               type="text" 
-              class="form-control border-start-0" 
+              class="form-control" 
               placeholder="Search by plant name, scientific name, or wildlife attraction..."
               @input="currentPage = 1"
             >
           </div>
         </div>
         <div class="col-6 col-md-3">
-          <select v-model="selectedCategory" class="form-select" @change="currentPage = 1">
+          <select v-model="selectedCategory" class="form-select text-secondary" @change="currentPage = 1">
             <option value="All">All Categories</option>
             <option value="Tree">Trees</option>
             <option value="Shrub">Shrubs</option>
@@ -62,7 +62,7 @@
     <div v-if="paginatedPlants.length > 0" class="row g-4 mb-4">
       <div v-for="plant in paginatedPlants" :key="plant.id" class="col-12 col-md-6 col-lg-4">
         <div class="card h-100 border-0 overflow-hidden d-flex flex-column">
-          <div v-if="plant.imageUrl" style="height: 180px;" class="overflow-hidden bg-light">
+          <div v-if="plant.imageUrl" style="height: 300px;" class="overflow-hidden bg-light">
             <img 
               :src="plant.imageUrl" 
               :alt="plant.name" 
@@ -72,7 +72,7 @@
           </div>
           <div class="p-3 d-flex justify-content-between align-items-center">
             <span class="badge bg-success bg-opacity-10 text-success fw-bold">
-              <i class="bi bi-tag-fill me-1"></i>{{ plant.category }}
+              {{ plant.category }}
             </span>
           </div>
 
@@ -82,18 +82,18 @@
             <p class="card-text text-secondary small mb-3 flex-grow-1">{{ plant.description }}</p>
 
             <div class="mb-3 small">
-              <div class="mb-1 text-secondary"><i class="bi bi-sun text-warning me-1"></i><strong>Sun:</strong> {{ plant.sunExposure }}</div>
-              <div class="mb-1 text-secondary"><i class="bi bi-droplet text-success me-1"></i><strong>Water:</strong> {{ plant.waterNeeds }}</div>
-              <div class="text-secondary"><i class="bi bi-heart-pulse text-danger me-1"></i><strong>Attracts:</strong> {{ plant.wildlifeBenefit }}</div>
+              <div class="mb-1 text-secondary"><strong>Sun:</strong> {{ plant.sunExposure }}</div>
+              <div class="mb-1 text-secondary"><strong>Water:</strong> {{ plant.waterNeeds }}</div>
+              <div class="text-secondary"><strong>Attracts:</strong> {{ plant.wildlifeBenefit }}</div>
             </div>
 
             <div class="pt-2 d-flex justify-content-end align-items-center mt-auto">
               <router-link 
                 :to="{ path: '/adopt', query: { selectedPlantId: plant.id } }"
-                class="btn btn-sm btn-outline-success fw-bold"
+                class="btn btn-success btn-sm fw-bold"
                 :class="{ 'disabled': plant.stock <= 0 }"
               >
-                <i class="bi bi-pencil-square me-1"></i>Apply to Adopt
+                Apply to Adopt
               </router-link>
             </div>
           </div>
@@ -103,17 +103,13 @@
 
     <!-- Empty Filter State -->
     <div v-else class="text-center py-5 rounded-3 shadow-sm my-4">
-      <i class="bi bi-search display-3 text-muted mb-3 d-block"></i>
       <h5 class="text-secondary">No native plants matched your search criteria</h5>
-      <button class="btn btn-outline-success btn-sm mt-2" @click="searchQuery = ''; selectedCategory = 'All'; currentPage = 1">
-        Clear Search Filters
-      </button>
     </div>
 
     <!-- Section 5: Interactive Pagination Controls -->
     <div v-if="filteredPlants.length > 0" class="d-flex justify-content-end align-items-center flex-wrap gap-2 py-3 px-3 rounded-3 mb-4 small">
       <div class="d-flex align-items-center gap-2">
-        <button class="btn btn-outline-success btn-sm" :disabled="currentPage <= 1" @click="currentPage--">
+        <button class="btn btn-success btn-sm fw-bold" :disabled="currentPage <= 1" @click="currentPage--">
           <i class="bi bi-chevron-left"></i>
         </button>
         <span></span>
@@ -127,7 +123,7 @@
           @change="jumpPage"
         >
         <span>of {{ totalPages }}</span>
-        <button class="btn btn-outline-success btn-sm" :disabled="currentPage >= totalPages" @click="currentPage++">
+        <button class="btn btn-success btn-sm fw-bold" :disabled="currentPage >= totalPages" @click="currentPage++">
            <i class="bi bi-chevron-right"></i>
         </button>
       </div>
@@ -139,26 +135,53 @@
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
           <div class="modal-header bg-success text-white">
-            <h5 class="modal-title fw-bold"><i class="bi bi-lightbulb-fill text-warning me-2"></i>Suggest a New Native Species</h5>
+            <h5 class="modal-title fw-bold">Suggest a New Native Species</h5>
             <button type="button" class="btn-close btn-close-white" @click="showProposalModal = false"></button>
           </div>
           <div class="modal-body p-4">
-            <form @submit.prevent="handleProposalSubmit">
+            <form @submit.prevent="handleProposalSubmit" novalidate>
+              <!-- Proposer Name -->
               <div class="mb-3">
-                <label class="form-label small fw-bold">Your Full Name *</label>
-                <input v-model="proposalForm.proposerName" type="text" class="form-control" required placeholder="e.g. Marcus Chen">
+                <label class="form-label small fw-bold">Your Full Name * </label>
+                <input 
+                  v-model="proposalForm.proposerName" 
+                  type="text" 
+                  class="form-control" 
+                  :class="{ 'is-invalid': proposalErrors.proposerName }"
+                  placeholder="e.g. Marcus Chen"
+                  @input="validateProposalField('proposerName')"
+                >
+                <div class="invalid-feedback">{{ proposalErrors.proposerName }}</div>
               </div>
+              <!-- Proposer Email -->
               <div class="mb-3">
-                <label class="form-label small fw-bold">Contact Email *</label>
-                <input v-model="proposalForm.email" type="email" class="form-control" required placeholder="name@domain.com">
+                <label class="form-label small fw-bold">Contact Email * </label>
+                <input 
+                  v-model="proposalForm.email" 
+                  type="email" 
+                  class="form-control" 
+                  :class="{ 'is-invalid': proposalErrors.email }"
+                  placeholder="e.g. name@domain.com"
+                  @input="validateProposalField('email')"
+                >
+                <div class="invalid-feedback">{{ proposalErrors.email }}</div>
               </div>
+              <!-- Plant Name & Category -->
               <div class="row g-2 mb-3">
                 <div class="col-8">
-                  <label class="form-label small fw-bold">Proposed Plant Common Name *</label>
-                  <input v-model="proposalForm.plantName" type="text" class="form-control" required placeholder="e.g. Kangaroo Paw">
+                  <label class="form-label small fw-bold">Proposed Plant Common Name * </label>
+                  <input 
+                    v-model="proposalForm.plantName" 
+                    type="text" 
+                    class="form-control" 
+                    :class="{ 'is-invalid': proposalErrors.plantName }"
+                    placeholder="e.g. Kangaroo Paw"
+                    @input="validateProposalField('plantName')"
+                  >
+                  <div class="invalid-feedback">{{ proposalErrors.plantName }}</div>
                 </div>
                 <div class="col-4">
-                  <label class="form-label small fw-bold">Category</label>
+                  <label class="form-label small fw-bold">Category * </label>
                   <select v-model="proposalForm.category" class="form-select">
                     <option value="Tree">Tree</option>
                     <option value="Shrub">Shrub</option>
@@ -167,20 +190,36 @@
                   </select>
                 </div>
               </div>
+              <!-- Botanical Name -->
               <div class="mb-3">
-                <label class="form-label small fw-bold">Botanical Scientific Name (Optional)</label>
+                <label class="form-label small fw-bold">Botanical Scientific Name</label>
                 <input v-model="proposalForm.scientificName" type="text" class="form-control" placeholder="e.g. Anigozanthos flavidus">
               </div>
+              <!-- Plant Image URL -->
+              <div class="mb-3">
+                <label class="form-label small fw-bold">Plant Image URL</label>
+                <input v-model="proposalForm.imageUrl" type="url" class="form-control" placeholder="e.g. https://images.unsplash.com/...">
+              </div>
+              <!-- Ecological Attraction -->
               <div class="mb-3">
                 <label class="form-label small fw-bold">Ecological Attraction & Habitat Value</label>
                 <input v-model="proposalForm.wildlifeBenefit" type="text" class="form-control" placeholder="e.g. Attracts honeyeaters and native bees">
               </div>
+              <!-- Reason for Suggestion -->
               <div class="mb-3">
-                <label class="form-label small fw-bold">Reason for Suggestion</label>
-                <textarea v-model="proposalForm.reason" class="form-control" rows="2" placeholder="Why is this plant beneficial for Melbourne backyards?"></textarea>
+                <label class="form-label small fw-bold">Reason for Suggestion * </label>
+                <textarea 
+                  v-model="proposalForm.reason" 
+                  class="form-control" 
+                  :class="{ 'is-invalid': proposalErrors.reason }"
+                  rows="2" 
+                  placeholder="e.g. Why is this plant beneficial for Melbourne backyards?"
+                  @input="validateProposalField('reason')"
+                ></textarea>
+                <div class="invalid-feedback">{{ proposalErrors.reason }}</div>
               </div>
               <div class="d-flex justify-content-end gap-2">
-                <button type="button" class="btn btn-secondary btn-sm" @click="showProposalModal = false">Cancel</button>
+                <button type="button" class="btn btn-sm" @click="showProposalModal = false">Cancel</button>
                 <button type="submit" class="btn btn-success btn-sm fw-bold">Submit for Review</button>
               </div>
             </form>
@@ -213,7 +252,58 @@ const pageSize = 9
 const currentPage = ref(1)
 const pageInput = ref(1)
 
-const proposalForm = ref({ proposerName: '', email: '', plantName: '', scientificName: '', category: 'Wildflower', wildlifeBenefit: '', reason: '' })
+const proposalForm = ref({ 
+  proposerName: '', 
+  email: '', 
+  plantName: '', 
+  scientificName: '', 
+  imageUrl: '', 
+  category: 'Wildflower', 
+  wildlifeBenefit: '', 
+  reason: '' 
+})
+
+const proposalErrors = ref({ 
+  proposerName: '', 
+  email: '', 
+  plantName: '', 
+  reason: '' 
+})
+
+function validateProposalField(field) {
+  if (field === 'proposerName') {
+    proposalErrors.value.proposerName = proposalForm.value.proposerName.trim() ? '' : 'Full name is required.'
+  }
+  if (field === 'email') {
+    if (!proposalForm.value.email.trim()) {
+      proposalErrors.value.email = 'Contact email address is required.'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(proposalForm.value.email)) {
+      proposalErrors.value.email = 'Please enter a valid email address (e.g. name@domain.com).'
+    } else {
+      proposalErrors.value.email = ''
+    }
+  }
+  if (field === 'plantName') {
+    proposalErrors.value.plantName = proposalForm.value.plantName.trim() ? '' : 'Plant common name is required.'
+  }
+  if (field === 'reason') {
+    proposalErrors.value.reason = proposalForm.value.reason.trim() ? '' : 'Please provide a reason for proposing this species.'
+  }
+}
+
+function handleProposalSubmit() {
+  validateProposalField('proposerName')
+  validateProposalField('email')
+  validateProposalField('plantName')
+  validateProposalField('reason')
+  if (proposalErrors.value.proposerName || proposalErrors.value.email || proposalErrors.value.plantName || proposalErrors.value.reason) {
+    return
+  }
+  plantStore.submitSpeciesProposal(proposalForm.value)
+  showProposalModal.value = false
+  proposalForm.value = { proposerName: '', email: '', plantName: '', scientificName: '', imageUrl: '', category: 'Wildflower', wildlifeBenefit: '', reason: '' }
+  showToast('Species suggestion submitted! Waiting for Admin review.')
+}
 
 // Multi-attribute reactive search filter
 const filteredPlants = computed(() => {
@@ -240,13 +330,6 @@ function jumpPage() {
   let target = Math.max(1, Math.min(pageInput.value, totalPages.value))
   currentPage.value = target
   pageInput.value = target
-}
-
-function handleProposalSubmit() {
-  plantStore.submitSpeciesProposal(proposalForm.value)
-  showProposalModal.value = false
-  proposalForm.value = { proposerName: '', email: '', plantName: '', scientificName: '', category: 'Wildflower', wildlifeBenefit: '', reason: '' }
-  showToast('Species suggestion submitted! Waiting for Admin review.')
 }
 
 function showToast(msg) {
