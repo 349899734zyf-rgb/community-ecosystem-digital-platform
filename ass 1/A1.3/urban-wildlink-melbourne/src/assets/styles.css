@@ -1,0 +1,84 @@
+/*
+  References & Acknowledgements:
+  - Base Styles: Custom global CSS variables extending Bootstrap 5.3 theme
+  - Typography: Native clean system font stack
+*/
+
+:root {
+  --bs-primary: #198754;
+  --bs-primary-rgb: 25, 135, 84;
+  --bs-success: #198754;
+  --theme-bg-subtle: #f4fbf7;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: #f8f9fa;
+  color: #212529;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+#app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.text-eco-green {
+  color: #198754 !important;
+}
+
+.bg-eco-green {
+  background-color: #198754 !important;
+}
+
+/* Static clean card styling without hover translation */
+.card {
+  border-radius: 8px;
+}
+
+.form-control.is-invalid,
+.form-control.is-valid,
+.form-select.is-invalid,
+.form-select.is-valid {
+  background-image: none !important;
+  padding-right: 0.75rem !important;
+}
+
+/* Maintain consistent subtle light-gray border on focus without glow halo */
+.form-control:focus,
+.form-select:focus {
+  border-color: #dee2e6 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.form-control.is-invalid,
+.form-select.is-invalid,
+.form-control.is-invalid:focus,
+.form-select.is-invalid:focus {
+  border-color: #dee2e6 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+.btn-outline-success:disabled,
+.btn-outline-success.disabled {
+  border-color: #dee2e6 !important;
+  color: #6c757d !important;
+  background-color: transparent !important;
+  opacity: 0.6 !important;
+  cursor: not-allowed !important;
+}
+
+.form-check-input:checked {
+  background-color: #198754 !important;
+  border-color: #198754 !important;
+}
+
+.form-check-input:focus {
+  box-shadow: none !important;
+  border-color: #198754 !important;
+}
