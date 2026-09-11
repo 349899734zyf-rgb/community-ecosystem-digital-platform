@@ -87,7 +87,21 @@
               <div class="text-secondary"><strong>Attracts:</strong> {{ plant.wildlifeBenefit }}</div>
             </div>
 
-            <div class="pt-2 d-flex justify-content-end align-items-center mt-auto">
+            <!-- Bottom action bar: Left reviews and rating, Right apply to adopt -->
+            <div class="pt-2 d-flex justify-content-between align-items-center mt-auto">
+              <!-- View Reviews & Rate Button (BR C.3) -->
+              <button 
+                type="button" 
+                class="btn btn-outline-success btn-sm"
+                title="View community reviews and ratings"
+                @click="openReviewModal(plant)"
+              >
+                <i class="bi bi-star-fill text-warning me-1"></i>
+                <span class="fw-bold me-1">{{ plantStore.getPlantRating(plant).average }}</span>
+                <span class="small text-muted">({{ plantStore.getPlantRating(plant).count }})</span>
+              </button>
+
+              <!-- Apply to Adopt Button -->
               <router-link 
                 :to="{ path: '/adopt', query: { selectedPlantId: plant.id } }"
                 class="btn btn-success btn-sm fw-bold"
@@ -235,6 +249,162 @@
         <div>{{ toastMessage }}</div>
       </div>
     </div>
+
+    <!-- Section 7: Species Reviews and Aggregated Rating Modal (BR C.3) -->
+    <div v-if="showReviewModal" class="modal-backdrop fade show"></div>
+    <div v-if="showReviewModal && activeReviewPlant" class="modal fade show d-block" tabindex="-1">
+      <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content border-0">
+          
+          <!-- Modal Header: Species Name and Close Button -->
+          <div class="modal-header bg-success text-white">
+            <h5 class="modal-title fw-bold fs-6">
+              {{ activeReviewPlant.name }} — Community Reviews & Ratings
+            </h5>
+            <button type="button" class="btn-close btn-close-white" @click="closeReviewModal"></button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="modal-body p-4">
+            
+            <!-- 1. Aggregated Rating Score Summary Card (BR C.3) -->
+            <div class="bg-light p-3 rounded-3 mb-4 d-flex align-items-center justify-content-between flex-wrap gap-3">
+              <div>
+                <div class="d-flex align-items-baseline gap-2">
+                  <span class="fs-1 fw-bold text-success">{{ plantStore.getPlantRating(activeReviewPlant).average }}</span>
+                  <span class="text-muted fw-bold">/ 5.0</span>
+                </div>
+
+                <!-- 5-Star Visual Graphical Display -->
+                <div class="d-flex gap-1 text-warning mb-1">
+                  <i 
+                    v-for="star in 5" 
+                    :key="star" 
+                    class="bi" 
+                    :class="star <= Math.round(Number(plantStore.getPlantRating(activeReviewPlant).average)) ? 'bi-star-fill' : 'bi-star'"
+                  ></i>
+                </div>
+                <div class="text-secondary small">
+                  Based on {{ plantStore.getPlantRating(activeReviewPlant).count }} verified resident reviews
+                </div>
+              </div>
+
+              <div class="text-end small text-muted">
+                <span class="d-block fw-bold text-dark">{{ activeReviewPlant.scientificName }}</span>
+                <span>Category: {{ activeReviewPlant.category }}</span>
+              </div>
+            </div>
+
+            <!-- 2. Write a Review & Rate Form (Role-Based BR C.2 & C.3) -->
+            <div class="border rounded-3 p-3 mb-4 bg-white">
+              <h6 class="fw-bold text-success mb-2">Share Your Backyard Growing Experience</h6>
+
+              <!-- State A: Authenticated User (Can rate 1-5 stars and submit review) -->
+              <div v-if="currentUser">
+                <!-- Interactive 1-5 Star Picker -->
+                <div class="mb-3">
+                  <label class="form-label small fw-bold mb-1">Your Star Rating *</label>
+                  <div class="d-flex align-items-center gap-2">
+                    <div class="d-flex gap-1 fs-4" style="cursor: pointer;">
+                      <i 
+                        v-for="star in 5" 
+                        :key="star"
+                        class="bi"
+                        :class="star <= (hoverRating || reviewForm.rating) ? 'bi-star-fill text-warning' : 'bi-star text-secondary'"
+                        @mouseenter="hoverRating = star"
+                        @mouseleave="hoverRating = 0"
+                        @click="reviewForm.rating = star"
+                      ></i>
+                    </div>
+                    <span class="small fw-semibold text-secondary">
+                      {{ getRatingText(hoverRating || reviewForm.rating) }}
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Review Feedback Textarea -->
+                <div class="mb-3">
+                  <label class="form-label small fw-bold">Your Review & Soil Experience *</label>
+                  <textarea 
+                    v-model.trim="reviewForm.comment"
+                    class="form-control"
+                    rows="2"
+                    placeholder="e.g. Grew well in clay soil, attracted native hoverflies and honeyeaters."
+                  ></textarea>
+                  <div v-if="reviewError" class="text-danger small mt-1">{{ reviewError }}</div>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                  <span class="small text-muted">
+                    Posting as: <strong>{{ currentUser.fullName }}</strong> ({{ currentUser.role }})
+                  </span>
+                  <button 
+                    type="button" 
+                    class="btn btn-success btn-sm fw-bold px-3"
+                    @click="handleReviewSubmit"
+                  >
+                    Submit Review
+                  </button>
+                </div>
+              </div>
+
+              <!-- State B: Unauthenticated Guest (Prompt to sign in) -->
+              <div v-else class="text-center py-2">
+                <p class="text-muted small mb-2">
+                  Only signed-in community members can submit a review and star rating.
+                </p>
+                <router-link to="/login" class="btn btn-outline-success btn-sm fw-semibold">
+                  Sign In to Rate & Review
+                </router-link>
+              </div>
+            </div>
+
+            <!-- 3. Existing Community Reviews List -->
+            <h6 class="fw-bold text-dark mb-3">
+              Community Feedback ({{ activeReviewPlant.reviews ? activeReviewPlant.reviews.length : 0 }})
+            </h6>
+            
+            <div v-if="activeReviewPlant.reviews && activeReviewPlant.reviews.length > 0" class="d-flex flex-column gap-3" style="max-height: 260px; overflow-y: auto;">
+              <div 
+                v-for="rev in activeReviewPlant.reviews" 
+                :key="rev.id"
+                class="border rounded-3 p-3 bg-light bg-opacity-50"
+              >
+                <div class="d-flex justify-content-between align-items-center mb-1">
+                  <div class="d-flex align-items-center gap-2">
+                    <span class="fw-bold small text-dark">{{ rev.userName }}</span>
+                    <span class="text-muted small">({{ rev.userRole }})</span>
+                  </div>
+                  <span class="text-muted small">{{ rev.date }}</span>
+                </div>
+                
+                <!-- Star Rating Display -->
+                <div class="d-flex gap-1 text-warning small mb-2">
+                  <i 
+                    v-for="star in 5" 
+                    :key="star" 
+                    class="bi" 
+                    :class="star <= rev.rating ? 'bi-star-fill' : 'bi-star'"
+                  ></i>
+                </div>
+
+                <p class="text-secondary small mb-0">{{ rev.comment }}</p>
+              </div>
+            </div>
+
+            <div v-else class="text-center text-muted py-3 small">
+              No reviews yet for this species. Be the first to share your experience!
+            </div>
+          </div>
+
+          <!-- Modal Footer Close Button -->
+          <div class="modal-footer border-top-0 pt-0">
+            <button type="button" class="btn btn-sm btn-secondary" @click="closeReviewModal">Close</button>
+          </div>
+
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -337,6 +507,79 @@ function showToast(msg) {
   setTimeout(() => {
     toastMessage.value = ''
   }, 3000)
+}
+
+// Current authenticated user (computed property)
+const currentUser = computed(() => plantStore.state.currentUser)
+
+// Review modal visibility and active plant record
+const showReviewModal = ref(false)
+const activeReviewPlant = ref(null)
+
+// Hover star rating state for dynamic preview
+const hoverRating = ref(0)
+
+// Review submission form data
+const reviewForm = ref({
+  rating: 5,
+  comment: ''
+})
+
+// Review validation error message
+const reviewError = ref('')
+
+// Open plant review and rating modal
+function openReviewModal(plant) {
+  activeReviewPlant.value = plant
+  reviewForm.value = { rating: 5, comment: '' }
+  reviewError.value = ''
+  hoverRating.value = 0
+  showReviewModal.value = true
+}
+
+// Close plant review and rating modal
+function closeReviewModal() {
+  showReviewModal.value = false
+  activeReviewPlant.value = null
+}
+
+// Star rating descriptive text helper
+function getRatingText(stars) {
+  const texts = {
+    1: '1 Star - Poor survival rate',
+    2: '2 Stars - Needs heavy care',
+    3: '3 Stars - Moderate growth',
+    4: '4 Stars - Very hardy & healthy',
+    5: '5 Stars - Outstanding biodiversity host!'
+  }
+  return texts[stars] || 'Select your rating'
+}
+
+// Handle plant review and rating submission (BR C.3)
+function handleReviewSubmit() {
+  reviewError.value = ''
+
+  if (!reviewForm.value.rating || reviewForm.value.rating < 1 || reviewForm.value.rating > 5) {
+    reviewError.value = 'Please select a star rating between 1 and 5.'
+    return
+  }
+  if (!reviewForm.value.comment.trim()) {
+    reviewError.value = 'Please share your gardening feedback (at least a few words).'
+    return
+  }
+
+  // Invoke Store to append review and trigger average recalculation
+  const res = plantStore.addPlantReview(activeReviewPlant.value.id, {
+    userName: currentUser.value.fullName,
+    userRole: currentUser.value.role,
+    rating: reviewForm.value.rating,
+    comment: reviewForm.value.comment
+  })
+
+  if (res.success) {
+    reviewForm.value = { rating: 5, comment: '' }
+    showToast('Thank you! Your rating and review have been published.')
+  }
 }
 </script>
 

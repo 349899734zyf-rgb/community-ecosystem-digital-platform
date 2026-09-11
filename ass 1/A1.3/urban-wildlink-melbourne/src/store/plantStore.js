@@ -51,6 +51,7 @@ const defaultProposals = [
     email: 'marcus.chen@student.monash.edu',
     plantName: 'Common Everlasting',
     scientificName: 'Chrysocephalum apiculatum',
+    imageUrl:'https://www.gardensonline.com.au/Uploads/Product/5879/Chrysocephalum-Apiculatum-1b.jpg',
     category: 'Wildflower',
     wildlifeBenefit: 'Native Hoverflies & Small Bees',
     reason: 'Hardy local butterfly host plant suited for Clayton clay soils.',
@@ -100,10 +101,43 @@ const state = reactive({
   isAdmin: false, 
   currentUser: loadData(CURRENT_USER_KEY, null),
   users: loadData(USERS_STORAGE_KEY, defaultUsers),
-  plants: loadData(PLANTS_STORAGE_KEY, initialPlants),
+  plants: ensurePlantReviews(loadData(PLANTS_STORAGE_KEY, initialPlants)),
   applications: loadData(APPLICATIONS_STORAGE_KEY, defaultApplications),
   speciesProposals: loadData(PROPOSALS_STORAGE_KEY, defaultProposals)
 })
+
+// Enrich initial plants with sample community reviews (BR C.3)
+function ensurePlantReviews(plants) {
+  return plants.map(plant => {
+    // If plant image is missing or empty, assign a vibrant native wildflower photo
+    if (!plant.imageUrl || plant.imageUrl.trim() === '') {
+      plant.imageUrl = 'https://www.gardensonline.com.au/Uploads/Product/5879/Chrysocephalum-Apiculatum-1b.jpg'
+    }
+    
+    if (!plant.reviews || plant.reviews.length === 0) {
+      // Provide two default authentic Melbourne gardening reviews
+      plant.reviews = [
+        {
+          id: `rev-${plant.id}-1`,
+          userName: 'Marcus Chen',
+          userRole: 'Resident',
+          rating: 5,
+          comment: 'Thriving wonderfully in Clayton clay soil. Attracted native bees within weeks!',
+          date: '2026-08-28'
+        },
+        {
+          id: `rev-${plant.id}-2`,
+          userName: 'Emily Watson',
+          userRole: 'Resident',
+          rating: 4,
+          comment: 'Very hardy indigenous species. Survived Melbourne winter frost without any protection.',
+          date: '2026-08-30'
+        }
+      ]
+    }
+    return plant
+  })
+}
 
 function saveAll() {
   localStorage.setItem(PLANTS_STORAGE_KEY, JSON.stringify(state.plants))
@@ -280,7 +314,7 @@ export const plantStore = {
         id: `plant-${Date.now()}`,
         name: prop.plantName,
         scientificName: prop.scientificName,
-        imageUrl: prop.imageUrl || '',
+        imageUrl: prop.imageUrl || 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRw2XaFC9xHD0cj1ofwdb-Jf34kpNzPLKFozGbWa-sy6A&s=10',
         category: prop.category,
         sunExposure: 'Full Sun to Part Shade',
         waterNeeds: 'Low to Medium',
@@ -337,10 +371,45 @@ export const plantStore = {
 
   // Section 8: Dataset Reset Utility
   resetToDefault() {
-    state.plants = JSON.parse(JSON.stringify(initialPlants))
+    state.plants = ensurePlantReviews(JSON.parse(JSON.stringify(initialPlants)))
     state.applications = JSON.parse(JSON.stringify(defaultApplications))
     state.speciesProposals = JSON.parse(JSON.stringify(defaultProposals))
     saveAll()
+  },
+
+  // Section 9: Aggregated Rating & Community Reviews
+  // 1. Dynamically calculate aggregated average rating and total review count
+  getPlantRating(plant) {
+    if (!plant || !plant.reviews || plant.reviews.length === 0) {
+      return { average: '0.0', count: 0 }
+    }
+    // Sum all user star ratings
+    const totalStars = plant.reviews.reduce((acc, rev) => acc + Number(rev.rating), 0)
+    const avgScore = (totalStars / plant.reviews.length).toFixed(1)
+    return { average: avgScore, count: plant.reviews.length }
+  },
+
+  // 2. Submit new plant rating review and persist to LocalStorage
+  addPlantReview(plantId, reviewData) {
+    const plant = state.plants.find(p => p.id === plantId)
+    if (!plant) {
+      return { success: false, message: 'Target species not found.' }
+    }
+    if (!plant.reviews) {
+      plant.reviews = []
+    }
+    // Construct new review record
+    const newReview = {
+      id: `rev-${Date.now()}`,
+      userName: reviewData.userName,
+      userRole: reviewData.userRole || 'Resident',
+      rating: Number(reviewData.rating),
+      comment: reviewData.comment.trim(),
+      date: new Date().toISOString().split('T')[0]
+    }
+    plant.reviews.unshift(newReview)
+    saveAll()
+    return { success: true, message: 'Review and rating submitted successfully!' }
   },
 
   // Section 9: Real-Time Summary Metric Getters
