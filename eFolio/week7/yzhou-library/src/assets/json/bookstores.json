@@ -1,0 +1,14 @@
+[
+  {
+    "id": 1,
+    "name": "Read More Books",
+    "location": "Melbourne CBD",
+    "rating": 4.8
+  },
+  {
+    "id": 2,
+    "name": "Page Turner Books",
+    "location": "Carlton",
+    "rating": 4.5
+  }
+]
