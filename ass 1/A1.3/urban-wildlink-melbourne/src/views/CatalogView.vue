@@ -411,6 +411,8 @@
 <script setup>
 import { ref, computed, watch } from 'vue'
 import { plantStore } from '../store/plantStore'
+// Import security sanitization utility to defend against XSS attacks (BR C.4)
+import { sanitizeInput } from '../utils/security'
 
 const searchQuery = ref('')
 const selectedCategory = ref('All')
@@ -568,12 +570,13 @@ function handleReviewSubmit() {
     return
   }
 
-  // Invoke Store to append review and trigger average recalculation
+  // Sanitize user review text to prevent stored XSS attacks (BR C.4)
+  const cleanComment = sanitizeInput(reviewForm.value.comment)
   const res = plantStore.addPlantReview(activeReviewPlant.value.id, {
     userName: currentUser.value.fullName,
     userRole: currentUser.value.role,
     rating: reviewForm.value.rating,
-    comment: reviewForm.value.comment
+    comment: cleanComment
   })
 
   if (res.success) {
