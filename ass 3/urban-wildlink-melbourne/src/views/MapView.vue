@@ -16,7 +16,7 @@
     <!-- Header Section -->
     <div class="mb-3">
       <h2 class="fw-bold text-success mb-1">
-        Melbourne Habitat & Nursery Map
+        Melbourne Nursery Map
       </h2>
       <p class="text-muted small mb-0">
         Search any Melbourne address to view nearby indigenous nurseries and habitat zones with live distances.
@@ -24,7 +24,7 @@
     </div>
 
     <!-- Unified Control Bar: Search + Locate on Map + Add Nursery + Category Filters -->
-    <div class="card border-0 shadow-sm bg-white p-3 mb-3">
+    <div class="card border-0 bg-white p-3 mb-3">
       <div class="d-flex align-items-center gap-2 flex-wrap">
         <!-- 1. Search Input with Live Autocomplete Dropdown -->
         <div class="flex-grow-1 position-relative" style="min-width: 280px;">
@@ -58,7 +58,7 @@
           <!-- Live Autocomplete Suggestions Dropdown -->
           <ul 
             v-if="showSuggestions && searchResults.length > 0" 
-            class="list-group position-absolute w-100 shadow-lg mt-1 overflow-auto" 
+            class="list-group position-absolute w-100 border mt-1 overflow-auto" 
             style="max-height: 250px; z-index: 1050;"
           >
             <li 
@@ -92,12 +92,11 @@
         <button 
           v-if="currentUser && currentUser.role === 'Administrator'" 
           type="button" 
-          class="btn btn-success fw-bold d-flex align-items-center gap-1 text-nowrap shadow-sm"
+          class="btn btn-success fw-bold d-flex align-items-center gap-1 text-nowrap"
           @click="openAddNurseryModal"
           title="Register a new community seedling nursery"
         >
-          <i class="bi bi-plus-circle"></i>
-          <span>Add Community Nursery</span>
+          <span>+ Add Community Nursery</span>
         </button>
 
         <!-- 4. Category Filter Buttons: [All Locations | Nursery | Corridor | Wetland] (Right of Add Nursery) -->
@@ -107,7 +106,7 @@
             :key="cat"
             type="button" 
             class="btn fw-bold"
-            :class="selectedCategory === cat ? 'btn-success text-white' : 'btn-outline-success bg-white'"
+            :class="selectedCategory === cat ? 'btn-success text-white' : 'btn-outline-success'"
             @click="filterMarkers(cat)"
           >
             {{ cat === 'All' ? 'All Locations' : cat }}
@@ -126,27 +125,25 @@
     </div>
 
     <!-- Map Canvas Container -->
-    <div class="card border-0 shadow-sm p-0 overflow-hidden" style="height: 520px; border-radius: 12px; position: relative;">
+    <div class="card border-0 p-0 overflow-hidden" style="height: 520px; border-radius: 12px; position: relative;">
       <div id="leaflet-map" style="height: 100%; width: 100%;"></div>
     </div>
 
     <!-- Color Matched Legend Section -->
-    <div class="card border-0 shadow-sm bg-white p-3 mt-3">
+    <div class="card border-0 bg-white p-3 mt-3">
       <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 small">
         <div class="d-flex align-items-center gap-4 flex-wrap">
           <!-- 1. Community Nursery (Green) -->
           <div class="d-flex align-items-center gap-2">
-            <span class="legend-dot" style="background-color: #198754;">
-              <i class="bi bi-flower1 text-white" style="font-size: 11px;"></i>
+            <span class="legend-dot" style="background-color: #47966d;">
             </span>
-            <strong style="color: #198754;">Community Nursery</strong>
+            <strong style="color: #47966d;">Community Nursery</strong>
             <span class="text-muted"></span>
           </div>
 
           <!-- 2. Wildlife Corridor (Blue) -->
           <div class="d-flex align-items-center gap-2">
             <span class="legend-dot" style="background-color: #0d6efd;">
-              <i class="bi bi-tree-fill text-white" style="font-size: 11px;"></i>
             </span>
             <strong style="color: #0d6efd;">Wildlife Corridor</strong>
             <span class="text-muted"></span>
@@ -154,8 +151,7 @@
 
           <!-- 3. Wetland Habitat (Teal) -->
           <div class="d-flex align-items-center gap-2">
-            <span class="legend-dot" style="background-color: #2b6e82;">
-              <i class="bi bi-water text-white" style="font-size: 11px;"></i>
+            <span class="legend-dot" style="background-color: #2b6e82	;">
             </span>
             <strong style="color: #2b6e82;">Wetland Habitat</strong>
             <span class="text-muted"></span>
@@ -177,7 +173,7 @@
     <div v-if="showAddModal" class="modal-backdrop fade show"></div>
     <div v-if="showAddModal" class="modal fade show d-block" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
+        <div class="modal-content border-0">
           <div class="modal-header bg-success text-white">
             <h5 class="modal-title fw-bold">
               Register New Community Nursery
@@ -185,7 +181,7 @@
             <button type="button" class="btn-close btn-close-white" @click="showAddModal = false"></button>
           </div>
           <div class="modal-body p-4">
-            <form @submit.prevent="handleVerifyAndSaveNursery">
+            <form @submit.prevent="handleVerifyAndSaveNursery" novalidate>
               <!-- Nursery Name -->
               <div class="mb-3">
                 <label for="nurseryNameInput" class="form-label small fw-bold">Nursery Name *</label>
@@ -194,9 +190,11 @@
                   v-model.trim="newNurseryForm.name" 
                   type="text" 
                   class="form-control" 
+                  :class="{ 'is-invalid': nurseryErrors.name }"
                   placeholder=""
-                  required
+                  @input="validateNurseryField('name')"
                 >
+                <div class="invalid-feedback">{{ nurseryErrors.name }}</div>
               </div>
 
               <!-- Nursery Category Dropdown -->
@@ -206,12 +204,14 @@
                   id="nurseryCategorySelect"
                   v-model="newNurseryForm.category" 
                   class="form-select"
-                  required
+                  :class="{ 'is-invalid': nurseryErrors.category }"
+                  @change="validateNurseryField('category')"
                 >
                   <option value="Nursery">Community Nursery</option>
                   <option value="Corridor">Wildlife Corridor</option>
                   <option value="Wetland">Wetland Habitat</option>
                 </select>
+                <div class="invalid-feedback">{{ nurseryErrors.category }}</div>
               </div>
 
               <!-- Real Street Address Input (No lat/lng needed!) -->
@@ -222,12 +222,11 @@
                   v-model.trim="newNurseryForm.address" 
                   type="text" 
                   class="form-control" 
-                  :class="{ 'is-invalid': modalAddressError }"
+                  :class="{ 'is-invalid': nurseryErrors.address || modalAddressError }"
                   placeholder=""
-                  required
-                  @input="modalAddressError = ''"
+                  @input="validateNurseryField('address')"
                 >
-                <div v-if="modalAddressError" class="invalid-feedback">{{ modalAddressError }}</div>
+                <div class="invalid-feedback">{{ nurseryErrors.address || modalAddressError }}</div>
               </div>
 
               <!-- Description -->
@@ -257,7 +256,7 @@
 
     <!-- Toast Notification -->
     <div v-if="toastMessage" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1080;">
-      <div class="alert alert-success shadow d-flex align-items-center mb-0" role="alert">
+      <div class="alert alert-success d-flex align-items-center mb-0" role="alert">
         <i class="bi bi-check-circle-fill me-2 fs-5"></i>
         <div>{{ toastMessage }}</div>
       </div>
@@ -438,7 +437,7 @@ function initMap() {
 
 // Create custom distinct DivIcon markers
 function createCustomIcon(category) {
-  let bgColor = '#198754'
+  let bgColor = '#47966d'
   let iconClass = 'bi-flower1'
 
   const catLower = (category || '').toLowerCase()
@@ -457,16 +456,13 @@ function createCustomIcon(category) {
         <div style="
           background-color: ${bgColor}; 
           color: #ffffff; 
-          width: 32px; 
-          height: 32px; 
+          width: 20px; 
+          height: 20px; 
           border-radius: 50%; 
-          border: 2.5px solid #ffffff; 
           display: flex; 
           align-items: center; 
           justify-content: center; 
-          box-shadow: 0 3px 8px rgba(0,0,0,0.35);
         ">
-          <i class="bi ${iconClass}" style="font-size: 15px;"></i>
         </div>
       </div>
     `,
@@ -490,8 +486,8 @@ function renderMarkers(locations) {
     const icon = createCustomIcon(loc.category)
     const marker = L.marker([loc.lat, loc.lng], { icon })
 
-    let badgeColor = '#198754'
-    let titleColor = '#198754'
+    let badgeColor = '#47966d'
+    let titleColor = '#47966d'
     const catLower = (loc.category || '').toLowerCase()
     if (loc.category === 'Corridor' || catLower.includes('corridor')) {
       badgeColor = '#0d6efd'
@@ -504,7 +500,7 @@ function renderMarkers(locations) {
     // Distance card formatted identically to reference design
     const distanceBox = (userLocation.value && distanceKm !== null) ? `
       <div style="background-color: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-top: 12px; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #334155;">
-        <i class="bi bi-geo" style="color: #198754; font-size: 16px; flex-shrink: 0;"></i>
+        <i class="bi bi-geo" style="color: #47966d; font-size: 16px; flex-shrink: 0;"></i>
         <span>Distance from your location: <strong style="color: #0f172a; font-weight: 700;">${distanceKm} km</strong></span>
       </div>
     ` : ''
@@ -515,7 +511,7 @@ function renderMarkers(locations) {
         <button 
           type="button" 
           onclick="window.__deleteMapLocation('${loc.id}')"
-          style="background: #ffffff; border: 1px solid #dc3545; color: #dc3545; padding: 4px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px; transition: all 0.2s;"
+          style="background: #ffffff; border: 1px solid #dc3545; color: #dc3545; padding: 4px 10px; border-radius: 6px; font-size: 11.5px; font-weight: 600; cursor: pointer; display: inline-flex; align-items: center; gap: 4px;"
           onmouseover="this.style.background='#dc3545'; this.style.color='#ffffff';"
           onmouseout="this.style.background='#ffffff'; this.style.color='#dc3545';"
           title="Remove this location from the map"
@@ -727,7 +723,6 @@ function applyVerifiedLocation(item) {
         width: 36px; 
         height: 36px; 
         border-radius: 50%; 
-        border: 3px solid #ffffff; 
         display: flex; 
         align-items: center; 
         justify-content: center; 
@@ -782,6 +777,25 @@ const newNurseryForm = ref({
   description: ''
 })
 
+const nurseryErrors = ref({
+  name: '',
+  category: '',
+  address: ''
+})
+
+function validateNurseryField(field) {
+  if (field === 'name') {
+    nurseryErrors.value.name = newNurseryForm.value.name.trim() ? '' : 'Nursery name is required.'
+  }
+  if (field === 'category') {
+    nurseryErrors.value.category = newNurseryForm.value.category ? '' : 'Please select a nursery category.'
+  }
+  if (field === 'address') {
+    modalAddressError.value = ''
+    nurseryErrors.value.address = newNurseryForm.value.address.trim() ? '' : 'Physical street address is required.'
+  }
+}
+
 function openAddNurseryModal() {
   newNurseryForm.value = {
     name: '',
@@ -789,12 +803,21 @@ function openAddNurseryModal() {
     address: '',
     description: ''
   }
+  nurseryErrors.value = {
+    name: '',
+    category: '',
+    address: ''
+  }
   modalAddressError.value = ''
   showAddModal.value = true
 }
 
 async function handleVerifyAndSaveNursery() {
-  if (!newNurseryForm.value.name || !newNurseryForm.value.address) return
+  validateNurseryField('name')
+  validateNurseryField('category')
+  validateNurseryField('address')
+  const hasError = Object.values(nurseryErrors.value).some(err => err !== '')
+  if (hasError) return
 
   isVerifyingModalAddress.value = true
   modalAddressError.value = ''
@@ -919,8 +942,6 @@ onUnmounted(() => {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  border: 1.5px solid #ffffff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 :deep(.leaflet-popup-content-wrapper) {

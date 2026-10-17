@@ -21,16 +21,12 @@
     <main id="main-content" class="flex-grow-1" tabindex="-1">
       <router-view />
     </main>
-
-    <!-- Sticky Bottom Footer -->
-    <AppFooter />
   </div>
 </template>
 
 <script setup>
 import OfflineBanner from './components/OfflineBanner.vue'
 import AppNavbar from './components/AppNavbar.vue'
-import AppFooter from './components/AppFooter.vue'
 </script>
 
 <style>
@@ -40,7 +36,6 @@ import AppFooter from './components/AppFooter.vue'
   top: -50px;
   left: 15px;
   z-index: 1200;
-  transition: top 0.2s ease-in-out;
 }
 .skip-link:focus {
   top: 15px;

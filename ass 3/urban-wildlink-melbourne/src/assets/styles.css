@@ -5,9 +5,9 @@
 */
 
 :root {
-  --bs-primary: #198754;
+  --bs-primary: #47966d;
   --bs-primary-rgb: 25, 135, 84;
-  --bs-success: #198754;
+  --bs-success: #47966d;
   --theme-bg-subtle: #f4fbf7;
 }
 
@@ -27,11 +27,11 @@ body {
 }
 
 .text-eco-green {
-  color: #198754 !important;
+  color: #47966d !important;
 }
 
 .bg-eco-green {
-  background-color: #198754 !important;
+  background-color: #47966d !important;
 }
 
 /* Static clean card styling without hover translation */
@@ -74,11 +74,44 @@ body {
 }
 
 .form-check-input:checked {
-  background-color: #198754 !important;
-  border-color: #198754 !important;
+  background-color: #47966d !important;
+  border-color: #47966d !important;
 }
 
 .form-check-input:focus {
   box-shadow: none !important;
-  border-color: #198754 !important;
+  border-color: #47966d !important;
+}
+
+/* Maintain consistent button states without focus box-shadow or halo ring */
+.btn:focus,
+.btn:focus-visible,
+.btn:active,
+.btn:active:focus,
+.btn-close:focus,
+.navbar-toggler:focus,
+button:focus,
+button:focus-visible {
+  box-shadow: none !important;
+  outline: none !important;
+}
+
+/* Remove FullCalendar navigation and custom action button focus shadows and align colors with Bootstrap btn-success */
+.fc {
+  --fc-button-bg-color: #198754;
+  --fc-button-border-color: #198754;
+  --fc-button-hover-bg-color: #157347;
+  --fc-button-hover-border-color: #146c43;
+  --fc-button-active-bg-color: #146c43;
+  --fc-button-active-border-color: #13653f;
+}
+
+.fc .fc-button:focus,
+.fc .fc-button:active,
+.fc .fc-button-primary:focus,
+.fc .fc-button-primary:active,
+.fc .fc-button-primary:not(:disabled):active:focus,
+.fc-event:focus {
+  box-shadow: none !important;
+  outline: none !important;
 }

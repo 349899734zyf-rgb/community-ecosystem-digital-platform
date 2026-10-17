@@ -19,7 +19,7 @@
               Transforming private backyards, balconies, and community spaces into connected micro-habitats of Australian indigenous vegetation.
             </p>
             <div>
-              <router-link to="/catalog" class="btn btn-warning btn-lg fw-bold px-4 shadow-sm">
+              <router-link to="/catalog" class="btn btn-light text-success btn-lg fw-bold px-4">
                 Explore Native Flora Catalog<i class="bi bi-arrow-right ms-1"></i>
               </router-link>
             </div>
@@ -130,7 +130,7 @@
             <div style="height: 300px;" class="overflow-hidden bg-light">
               <img 
                 src="https://garden.org/pics/2017-12-08/carolem/5ea1c7.jpg" 
-                alt="Golden Wattle (Acacia pycnantha)" 
+                alt="Common Correa (Correa reflexa)" 
                 class="w-100 h-100" 
                 style="object-fit: cover;"
               >

@@ -93,8 +93,8 @@
               </button>
             </div>
             <div v-else>
-              <button class="btn btn-success fw-bold w-100 shadow-sm" @click="handleBookWorkshop">
-                <i class="bi bi-check-lg me-1"></i> Confirm RSVP & Reserve Seat
+              <button class="btn btn-success fw-bold w-100" @click="handleBookWorkshop">
+                Reserve Seat
               </button>
             </div>
           </div>
@@ -110,15 +110,15 @@
     <div v-if="showAddModal" class="modal-backdrop fade show"></div>
     <div v-if="showAddModal" class="modal fade show d-block" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
+        <div class="modal-content border-0">
           <div class="modal-header bg-success text-white">
             <h5 class="modal-title fw-bold">
-              <i class="bi bi-calendar-plus me-2"></i>Create New Community Workshop
+              Create New Community Workshop
             </h5>
             <button type="button" class="btn-close btn-close-white" @click="showAddModal = false"></button>
           </div>
           <div class="modal-body p-4">
-            <form @submit.prevent="handleCreateWorkshop">
+            <form @submit.prevent="handleCreateWorkshop" novalidate>
               <!-- Workshop Title -->
               <div class="mb-3">
                 <label for="eventTitleInput" class="form-label small fw-bold">Workshop Title *</label>
@@ -127,9 +127,11 @@
                   v-model.trim="newEventForm.title" 
                   type="text" 
                   class="form-control" 
-                  placeholder="e.g. Native Seed Harvesting & Propagation"
-                  required
+                  :class="{ 'is-invalid': eventErrors.title }"
+                  placeholder=""
+                  @input="validateEventField('title')"
                 >
+                <div class="invalid-feedback">{{ eventErrors.title }}</div>
               </div>
 
               <!-- Date & Seat Capacity -->
@@ -141,8 +143,10 @@
                     v-model="newEventForm.date" 
                     type="date" 
                     class="form-control" 
-                    required
+                    :class="{ 'is-invalid': eventErrors.date }"
+                    @change="validateEventField('date')"
                   >
+                  <div class="invalid-feedback">{{ eventErrors.date }}</div>
                 </div>
                 <div class="col-md-5">
                   <label for="eventSeatsInput" class="form-label small fw-bold">Seat Capacity *</label>
@@ -153,22 +157,26 @@
                     min="1" 
                     max="100"
                     class="form-control" 
-                    required
+                    :class="{ 'is-invalid': eventErrors.totalSeats }"
+                    @input="validateEventField('totalSeats')"
                   >
+                  <div class="invalid-feedback">{{ eventErrors.totalSeats }}</div>
                 </div>
               </div>
 
               <!-- Location -->
               <div class="mb-3">
-                <label for="eventLocationInput" class="form-label small fw-bold">Location / Venue *</label>
+                <label for="eventLocationInput" class="form-label small fw-bold">Location *</label>
                 <input 
                   id="eventLocationInput"
                   v-model.trim="newEventForm.location" 
                   type="text" 
                   class="form-control" 
-                  placeholder="e.g. Clayton Community Garden, VIC"
-                  required
+                  :class="{ 'is-invalid': eventErrors.location }"
+                  placeholder=""
+                  @input="validateEventField('location')"
                 >
+                <div class="invalid-feedback">{{ eventErrors.location }}</div>
               </div>
 
               <!-- Description -->
@@ -179,14 +187,14 @@
                   v-model.trim="newEventForm.description" 
                   class="form-control" 
                   rows="3" 
-                  placeholder="Provide an overview of activities and learning outcomes..."
+                  placeholder=""
                 ></textarea>
               </div>
 
               <div class="d-flex justify-content-end gap-2 pt-2">
                 <button type="button" class="btn btn-secondary btn-sm" @click="showAddModal = false">Cancel</button>
                 <button type="submit" class="btn btn-success btn-sm fw-bold">
-                  <i class="bi bi-check-lg me-1"></i>Publish Workshop
+                  Publish Workshop
                 </button>
               </div>
             </form>
@@ -220,7 +228,7 @@ const defaultEvents = [
     description: 'Join volunteers to plant 150 Eucalyptus seedlings along the local biodiversity corridor.',
     totalSeats: 20,
     availableSeats: 6,
-    color: '#198754'
+    color: '#47966d'
   },
   {
     id: 'evt-2',
@@ -230,7 +238,7 @@ const defaultEvents = [
     description: 'Learn how to build timber hollow nesting boxes for native parrots and micro-bats.',
     totalSeats: 15,
     availableSeats: 4,
-    color: '#198754'
+    color: '#47966d'
   },
   {
     id: 'evt-3',
@@ -240,7 +248,7 @@ const defaultEvents = [
     description: 'Optimize soil microbiomes and build clay-tolerant native plant beds for water conservation.',
     totalSeats: 25,
     availableSeats: 12,
-    color: '#198754'
+    color: '#47966d'
   },
   {
     id: 'evt-4',
@@ -250,7 +258,7 @@ const defaultEvents = [
     description: 'How apartment renters can create pollinator hotspots in balconies and small courtyards.',
     totalSeats: 18,
     availableSeats: 1,
-    color: '#198754'
+    color: '#47966d'
   }
 ]
 
@@ -290,6 +298,28 @@ const newEventForm = ref({
   description: ''
 })
 
+const eventErrors = ref({
+  title: '',
+  date: '',
+  totalSeats: '',
+  location: ''
+})
+
+function validateEventField(field) {
+  if (field === 'title') {
+    eventErrors.value.title = newEventForm.value.title.trim() ? '' : 'Workshop title is required.'
+  }
+  if (field === 'date') {
+    eventErrors.value.date = newEventForm.value.date ? '' : 'Workshop date is required.'
+  }
+  if (field === 'totalSeats') {
+    eventErrors.value.totalSeats = (newEventForm.value.totalSeats && newEventForm.value.totalSeats > 0) ? '' : 'Valid seat capacity is required (min 1).'
+  }
+  if (field === 'location') {
+    eventErrors.value.location = newEventForm.value.location.trim() ? '' : 'Workshop location is required.'
+  }
+}
+
 function openAddEventModal() {
   if (!currentUser.value || currentUser.value.role !== 'Administrator') return
   newEventForm.value = {
@@ -299,6 +329,12 @@ function openAddEventModal() {
     totalSeats: 20,
     description: ''
   }
+  eventErrors.value = {
+    title: '',
+    date: '',
+    totalSeats: '',
+    location: ''
+  }
   showAddModal.value = true
 }
 
@@ -307,7 +343,13 @@ function handleCreateWorkshop() {
     showToast('Only administrators can publish new workshops.', 'alert-danger', 'bi-shield-exclamation')
     return
   }
-  if (!newEventForm.value.title || !newEventForm.value.date || !newEventForm.value.location) return
+  validateEventField('title')
+  validateEventField('date')
+  validateEventField('totalSeats')
+  validateEventField('location')
+
+  const hasError = Object.values(eventErrors.value).some(err => err !== '')
+  if (hasError) return
 
   const seats = parseInt(newEventForm.value.totalSeats, 10) || 20
   const newEvent = {
@@ -318,7 +360,7 @@ function handleCreateWorkshop() {
     description: newEventForm.value.description.trim() || 'Community hands-on biodiversity and habitat workshop.',
     totalSeats: seats,
     availableSeats: seats,
-    color: '#198754'
+    color: '#47966d'
   }
 
   eventsData.value.push(newEvent)
@@ -408,7 +450,7 @@ function formatEvents() {
       id: e.id,
       title: booked ? `[Booked] ${e.title}` : `${e.title} (${e.availableSeats} left)`,
       date: e.date,
-      backgroundColor: booked ? '#0f5132' : '#198754',
+      backgroundColor: booked ? '#0f5132' : '#47966d',
       borderColor: booked ? '#0a3622' : '#146c43'
     }
   })
@@ -447,17 +489,47 @@ function syncCalendarEvents() {
 :deep(.fc-toolbar-title) {
   font-size: 1.15rem;
   font-weight: bold;
-  color: #198754;
+  color: #47966d;
+}
+
+:deep(.fc) {
+  --fc-button-bg-color: #198754;
+  --fc-button-border-color: #198754;
+  --fc-button-hover-bg-color: #157347;
+  --fc-button-hover-border-color: #146c43;
+  --fc-button-active-bg-color: #146c43;
+  --fc-button-active-border-color: #13653f;
 }
 
 :deep(.fc-button-primary) {
-  background-color: #198754;
-  border-color: #198754;
+  background-color: #198754 !important;
+  border-color: #198754 !important;
+  color: #ffffff !important;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
 }
 
 :deep(.fc-button-primary:hover) {
-  background-color: #157347;
-  border-color: #157347;
+  background-color: #157347 !important;
+  border-color: #146c43 !important;
+  color: #ffffff !important;
+}
+
+:deep(.fc-button-primary:active),
+:deep(.fc-button-primary.fc-button-active),
+:deep(.fc-button-primary:not(:disabled):active) {
+  background-color: #146c43 !important;
+  border-color: #13653f !important;
+  color: #ffffff !important;
+}
+
+:deep(.fc-button),
+:deep(.fc-button-primary),
+:deep(.fc-button:focus),
+:deep(.fc-button-primary:focus),
+:deep(.fc-button-primary:active),
+:deep(.fc-button-primary:not(:disabled):active:focus) {
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 :deep(.fc-event) {
@@ -475,12 +547,12 @@ function syncCalendarEvents() {
 }
 
 :deep(.fc-daygrid-day-number:hover) {
-  color: #198754 !important;
+  color: #47966d !important;
 }
 
-/* Weekday Column Headers (Sun, Mon, Tue...): Theme green #198754 */
+/* Weekday Column Headers (Sun, Mon, Tue...): Theme green #47966d */
 :deep(.fc-col-header-cell-cushion) {
-  color: #198754 !important;
+  color: #47966d !important;
   text-decoration: none !important;
   font-weight: 600;
   padding: 6px 0;
@@ -492,7 +564,7 @@ function syncCalendarEvents() {
 }
 
 :deep(.fc-day-today .fc-daygrid-day-number) {
-  color: #198754 !important;
+  color: #47966d !important;
   font-weight: 700;
 }
 
@@ -519,17 +591,30 @@ function syncCalendarEvents() {
   border-color: #198754 !important;
   color: #ffffff !important;
   font-size: 0.85rem !important;
-  font-weight: 600 !important;
+  font-weight: 700 !important;
   padding: 5px 12px !important;
   border-radius: 6px !important;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08) !important;
-  transition: all 0.2s ease !important;
+  transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out !important;
 }
 
 :deep(.fc-addWorkshopBtn-button:hover) {
   background-color: #157347 !important;
-  border-color: #157347 !important;
-  transform: translateY(-1px);
+  border-color: #146c43 !important;
+  color: #ffffff !important;
+}
+
+:deep(.fc-addWorkshopBtn-button:active),
+:deep(.fc-addWorkshopBtn-button.fc-button-active),
+:deep(.fc-addWorkshopBtn-button:not(:disabled):active) {
+  background-color: #146c43 !important;
+  border-color: #13653f !important;
+  color: #ffffff !important;
+}
+
+:deep(.fc-addWorkshopBtn-button:focus),
+:deep(.fc-addWorkshopBtn-button:active) {
+  box-shadow: none !important;
+  outline: none !important;
 }
 
 .is-admin :deep(.fc-addWorkshopBtn-button) {

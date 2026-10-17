@@ -35,8 +35,10 @@
     <div class="mb-4">
       <div class="row g-3 align-items-center">
         <div class="col-12 col-md-6">
-          <div class="input">
-            <span class="input-text bg-light"></span>
+          <div class="input-group">
+            <span class="input-group-text bg-light text-success">
+              <i class="bi bi-search"></i>
+            </span>
             <input 
               v-model="searchQuery" 
               type="text" 
@@ -116,7 +118,7 @@
     </div>
 
     <!-- Empty Filter State -->
-    <div v-else class="text-center py-5 rounded-3 shadow-sm my-4">
+    <div v-else class="text-center py-5 rounded-3 my-4">
       <h5 class="text-secondary">No native plants matched your search criteria</h5>
     </div>
 
@@ -147,7 +149,7 @@
     <div v-if="showProposalModal" class="modal-backdrop fade show"></div>
     <div v-if="showProposalModal" class="modal fade show d-block" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow">
+        <div class="modal-content border-0">
           <div class="modal-header bg-success text-white">
             <h5 class="modal-title fw-bold">Suggest a New Native Species</h5>
             <button type="button" class="btn-close btn-close-white" @click="showProposalModal = false"></button>
@@ -162,7 +164,7 @@
                   type="text" 
                   class="form-control" 
                   :class="{ 'is-invalid': proposalErrors.proposerName }"
-                  placeholder="e.g. Marcus Chen"
+                  placeholder=""
                   @input="validateProposalField('proposerName')"
                 >
                 <div class="invalid-feedback">{{ proposalErrors.proposerName }}</div>
@@ -175,7 +177,7 @@
                   type="email" 
                   class="form-control" 
                   :class="{ 'is-invalid': proposalErrors.email }"
-                  placeholder="e.g. name@domain.com"
+                  placeholder=""
                   @input="validateProposalField('email')"
                 >
                 <div class="invalid-feedback">{{ proposalErrors.email }}</div>
@@ -189,7 +191,7 @@
                     type="text" 
                     class="form-control" 
                     :class="{ 'is-invalid': proposalErrors.plantName }"
-                    placeholder="e.g. Kangaroo Paw"
+                    placeholder=""
                     @input="validateProposalField('plantName')"
                   >
                   <div class="invalid-feedback">{{ proposalErrors.plantName }}</div>
@@ -207,17 +209,17 @@
               <!-- Botanical Name -->
               <div class="mb-3">
                 <label class="form-label small fw-bold">Botanical Scientific Name</label>
-                <input v-model="proposalForm.scientificName" type="text" class="form-control" placeholder="e.g. Anigozanthos flavidus">
+                <input v-model="proposalForm.scientificName" type="text" class="form-control" placeholder="">
               </div>
               <!-- Plant Image URL -->
               <div class="mb-3">
                 <label class="form-label small fw-bold">Plant Image URL</label>
-                <input v-model="proposalForm.imageUrl" type="url" class="form-control" placeholder="e.g. https://images.unsplash.com/...">
+                <input v-model="proposalForm.imageUrl" type="url" class="form-control" placeholder="">
               </div>
               <!-- Ecological Attraction -->
               <div class="mb-3">
                 <label class="form-label small fw-bold">Ecological Attraction & Habitat Value</label>
-                <input v-model="proposalForm.wildlifeBenefit" type="text" class="form-control" placeholder="e.g. Attracts honeyeaters and native bees">
+                <input v-model="proposalForm.wildlifeBenefit" type="text" class="form-control" placeholder="">
               </div>
               <!-- Reason for Suggestion -->
               <div class="mb-3">
@@ -227,7 +229,7 @@
                   class="form-control" 
                   :class="{ 'is-invalid': proposalErrors.reason }"
                   rows="2" 
-                  placeholder="e.g. Why is this plant beneficial for Melbourne backyards?"
+                  placeholder=""
                   @input="validateProposalField('reason')"
                 ></textarea>
                 <div class="invalid-feedback">{{ proposalErrors.reason }}</div>
@@ -244,7 +246,7 @@
 
     <!-- Notification Toast Banner -->
     <div v-if="toastMessage" class="position-fixed bottom-0 end-0 p-3" style="z-index: 1050;">
-      <div class="alert alert-success shadow d-flex align-items-center mb-0" role="alert">
+      <div class="alert alert-success d-flex align-items-center mb-0" role="alert">
         <i class="bi bi-check-circle-fill fs-4 me-2"></i>
         <div>{{ toastMessage }}</div>
       </div>
@@ -300,8 +302,8 @@
                     <div class="d-flex gap-1 fs-4" style="cursor: pointer;">
                       <i 
                         v-for="star in 5" 
-                        :key="star"
-                        class="bi"
+                        :key="star" 
+                        class="bi" 
                         :class="star <= (hoverRating || reviewForm.rating) ? 'bi-star-fill text-warning' : 'bi-star text-secondary'"
                         @mouseenter="hoverRating = star"
                         @mouseleave="hoverRating = 0"
@@ -319,10 +321,12 @@
                   <textarea 
                     v-model.trim="reviewForm.comment"
                     class="form-control"
+                    :class="{ 'is-invalid': reviewError }"
                     rows="2"
-                    placeholder="e.g. Grew well in clay soil, attracted native hoverflies and honeyeaters."
+                    placeholder=""
+                    @input="reviewError = ''"
                   ></textarea>
-                  <div v-if="reviewError" class="text-danger small mt-1">{{ reviewError }}</div>
+                  <div class="invalid-feedback">{{ reviewError }}</div>
                 </div>
 
                 <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -439,7 +443,7 @@ function validateProposalField(field) {
     if (!proposalForm.value.email.trim()) {
       proposalErrors.value.email = 'Contact email address is required.'
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(proposalForm.value.email)) {
-      proposalErrors.value.email = 'Please enter a valid email address (e.g. name@domain.com).'
+      proposalErrors.value.email = 'Please enter a valid email address.'
     } else {
       proposalErrors.value.email = ''
     }

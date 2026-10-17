@@ -32,7 +32,7 @@ const routes = [
   // 3. Habitat & Nursery Spatial Map route (BR E.2)
   { path: '/map', name: 'map', component: MapView },
 
-  // 4. Community Workshops & Event Booking route (BR F.1-1)
+  // 4. Community Workshops Booking route (BR F.1-1)
   { path: '/events', name: 'events', component: EventsView },
 
   // 3. Plant adoption wizard route
@@ -61,6 +61,13 @@ const routes = [
       requiresAuth: true, 
       allowedRoles: ['Volunteer', 'Administrator'] 
     } 
+  },
+
+  // 7. Official Digital Certificate View (BR D.2)
+  {
+    path: '/certificate',
+    name: 'certificate',
+    component: () => import('../views/CertificateView.vue')
   }
 ]
 

@@ -71,7 +71,7 @@
           </li>
         </ul>
         <div class="d-flex align-items-center gap-3 mt-2 mt-lg-0">
-          
+
           <!-- Guest State-->
           <template v-if="!currentUser">
             <router-link to="/login" class="btn btn-outline-light btn-sm fw-semibold px-3">
@@ -79,9 +79,10 @@
             </router-link>
           </template>
 
-          <!-- Logged-in State: Plain text name without badges -->
+          <!-- Logged-in State -->
           <template v-else>
-            <span class="text-white small fw-bold">
+            <span class="text-white small fw-bold me-1">
+              {{ currentUser.name || currentUser.email }}
             </span>
 
             <button 

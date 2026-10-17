@@ -32,7 +32,7 @@
         </div>
         <div class="progress" style="height: 6px;">
           <div 
-            class="progress-bar bg-success transition-all" 
+            class="progress-bar bg-success" 
             role="progressbar" 
             :style="{ width: currentStep === 1 ? '33%' : currentStep === 2 ? '66%' : '100%' }"
           ></div>
@@ -61,7 +61,7 @@
               type="text" 
               class="form-control" 
               :class="getFieldClass('fullName')" 
-              placeholder="e.g. Marcus Chen"
+              placeholder=""
               aria-required="true"
               @blur="touchField('fullName')"
               @input="validateField('fullName')"
@@ -79,7 +79,7 @@
               type="email" 
               class="form-control" 
               :class="getFieldClass('email')" 
-              placeholder="e.g. marcus.chen@student.monash.edu"
+              placeholder=""
               aria-required="true"
               @blur="touchField('email')"
               @input="validateField('email')"
@@ -99,7 +99,7 @@
                 maxlength="4"
                 class="form-control" 
                 :class="getFieldClass('postcode')" 
-                placeholder="e.g. 3168"
+                placeholder=""
                 aria-required="true"
                 @blur="touchField('postcode')"
                 @input="validateField('postcode')"
@@ -116,7 +116,7 @@
                 type="text" 
                 class="form-control" 
                 :class="getFieldClass('address')" 
-                placeholder="e.g. 45 Prince Street, Clayton"
+                placeholder=""
                 aria-required="true"
                 @blur="touchField('address')"
                 @input="validateField('address')"
@@ -131,7 +131,6 @@
             <button 
               type="button" 
               class="btn btn-success fw-bold px-4" 
-              :disabled="!isStep1Valid"
               @click="nextStep(2)"
             >
               Continue to Species Selection <i class="bi bi-arrow-right ms-1"></i>
@@ -219,7 +218,6 @@
             <button 
               type="button" 
               class="btn btn-success fw-bold px-4" 
-              :disabled="!isStep2Valid"
               @click="nextStep(3)"
             >
               Review Summary <i class="bi bi-arrow-right ms-1"></i>
@@ -292,8 +290,7 @@
             </button>
             <button 
               type="button" 
-              class="btn btn-success fw-bold px-4 shadow-sm" 
-              :disabled="!formData.termsAccepted"
+              class="btn btn-success fw-bold px-4" 
               @click="handleSubmit"
             >
               Submit Adoption Request
@@ -433,7 +430,7 @@ function validateField(field) {
       if (!formData.value.email) {
         errors.value.email = 'Contact email address is required.'
       } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.value.email)) {
-        errors.value.email = 'Please enter a valid email address (e.g. name@domain.com).'
+        errors.value.email = 'Please enter a valid email address.'
       } else {
         errors.value.email = ''
       }
@@ -443,7 +440,7 @@ function validateField(field) {
       if (!formData.value.postcode) {
         errors.value.postcode = 'Postcode is required.'
       } else if (!/^3\d{3}$/.test(formData.value.postcode)) {
-        errors.value.postcode = 'Must be a 4-digit Victorian postcode starting with 3 (e.g. 3000, 3168).'
+        errors.value.postcode = 'Must be a 4-digit Victorian postcode starting with 3.'
       } else {
         errors.value.postcode = ''
       }
@@ -519,7 +516,7 @@ function nextStep(stepNumber) {
     if (!isStep1Valid.value) return
   }
   if (stepNumber === 3) {
-    ['plantId', 'quantity'].forEach(f => touchField(f))
+    ['plantId', 'quantity', 'gardenType'].forEach(f => touchField(f))
     if (!isStep2Valid.value) return
   }
   currentStep.value = stepNumber
@@ -527,7 +524,11 @@ function nextStep(stepNumber) {
 
 // Application Submission
 function handleSubmit() {
-  if (!formData.value.termsAccepted || !isStep1Valid.value || !isStep2Valid.value) return
+  if (!formData.value.termsAccepted) {
+    touchField('termsAccepted')
+    return
+  }
+  if (!isStep1Valid.value || !isStep2Valid.value) return
   
   const createdApp = plantStore.submitApplication(formData.value)
   submittedReceipt.value = createdApp
@@ -538,8 +539,5 @@ function handleSubmit() {
 <style scoped>
 .cursor-pointer {
   cursor: pointer;
-}
-.transition-all {
-  transition: width 0.3s ease-in-out;
 }
 </style>

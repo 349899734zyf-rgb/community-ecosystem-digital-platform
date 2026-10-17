@@ -33,7 +33,7 @@
                 type="text" 
                 class="form-control" 
                 :class="{ 'is-invalid': errors.fullName }"
-                placeholder="e.g. Marcus Chen"
+                placeholder=""
                 aria-required="true"
                 @input="validateField('fullName')"
               >
@@ -49,7 +49,7 @@
                 type="email" 
                 class="form-control" 
                 :class="{ 'is-invalid': errors.email }"
-                placeholder="e.g. name@student.monash.edu"
+                placeholder=""
                 aria-required="true"
                 @input="validateField('email')"
               >
@@ -126,13 +126,8 @@
               <div class="invalid-feedback">{{ errors.confirmPassword }}</div>
             </div>
 
-            <!-- Global Error Banner -->
-            <div v-if="errorMessage" class="alert alert-danger py-2 small mb-3">
-              <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ errorMessage }}
-            </div>
-
             <!-- Submit Registration Button -->
-            <button type="submit" class="btn btn-success w-100 fw-bold py-2 shadow-sm mb-3" :disabled="isSubmitting">
+            <button type="submit" class="btn btn-success w-100 fw-bold py-2 mb-3" :disabled="isSubmitting">
               <span v-if="isSubmitting" class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
               Register Account
             </button>
@@ -197,7 +192,7 @@ function validateField(field) {
     if (!form.value.email) {
       errors.value.email = 'Email address is required.'
     } else if (!emailRegex.test(form.value.email)) {
-      errors.value.email = 'Please enter a valid email address (e.g. name@domain.com).'
+      errors.value.email = 'Please enter a valid email address.'
     } else {
       errors.value.email = ''
     }
@@ -249,9 +244,9 @@ async function handleRegister() {
       password: form.value.password
     })
 
-    // Display error message if registration fails locally
+    // Display error message under email field if registration fails locally
     if (!result.success) {
-      errorMessage.value = result.message
+      errors.value.email = result.message
       return
     }
 

@@ -8,7 +8,7 @@
 <template>
   <div 
     v-if="!isOnline" 
-    class="alert alert-warning border-0 rounded-0 mb-0 py-2 text-center small shadow-sm d-flex align-items-center justify-content-center gap-2"
+    class="alert alert-warning border-0 rounded-0 mb-0 py-2 text-center small d-flex align-items-center justify-content-center gap-2"
     role="status"
     aria-live="polite"
   >

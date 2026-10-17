@@ -10,16 +10,8 @@
 -->
 
 <template>
-  <div class="card border-0 shadow-sm bg-white p-4 mb-4">
-    <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-      <div>
-        <h5 class="fw-bold text-success mb-1">
-          <i class="bi bi-bar-chart-line-fill me-2"></i>Ecological Impact & Species Analytics
-        </h5>
-        <p class="text-muted small mb-0">
-          Visual comparison of available nursery stock and community adoptions by category.
-        </p>
-      </div>
+  <div class="card border-0 bg-white p-4 mb-4">
+    <div class="d-flex justify-content-end align-items-center mb-3 flex-wrap gap-2">
 
       <div class="btn-group btn-group-sm" role="group">
         <button 
@@ -49,7 +41,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { Chart, registerables } from 'chart.js'
 import { plantStore } from '../store/plantStore'
 
@@ -161,6 +153,14 @@ function switchChartType(type) {
 
 onMounted(() => {
   renderChart()
+})
+
+// Clean up Chart.js instance upon unmount to release resources
+onUnmounted(() => {
+  if (chartInstance) {
+    chartInstance.destroy()
+    chartInstance = null
+  }
 })
 
 // Re-render when plant store changes

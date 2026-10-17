@@ -26,22 +26,3 @@ export function sanitizeInput(input) {
     .trim()
     .replace(/[&<>"'/]/g, match => HTML_ESCAPES[match] || match)
 }
-
-// 3. Native Browser Web Crypto SHA-256 Hash Function (Prevents plaintext password exposure)
-export async function hashPassword(password) {
-  if (!password) return ''
-  try {
-    // Encode password string as UTF-8 Uint8Array buffer
-    const encoder = new TextEncoder()
-    const data = encoder.encode(password)
-    // Invoke window.crypto.subtle to generate cryptographic digest
-    const hashBuffer = await window.crypto.subtle.digest('SHA-256', data)
-    // Convert array buffer into standard hex string representation
-    const hashArray = Array.from(new Uint8Array(hashBuffer))
-    return hashArray.map(byte => byte.toString(16).padStart(2, '0')).join('')
-  } catch (err) {
-
-    // Fallback if Web Crypto is unsupported
-    return btoa(password)
-  }
-}

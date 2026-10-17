@@ -5,88 +5,15 @@
  * - Synthetic Mock Data: Realistic Victorian addresses and email formats.
  */
 
-import { reactive, computed } from 'vue'
+import { reactive } from 'vue'
 import { initialPlants } from '../data/initialPlants'
+import { defaultApplications, defaultProposals, defaultUsers } from '../data/mockData'
 
 const PLANTS_STORAGE_KEY = 'urban_wildlink_plants_v2'
 const APPLICATIONS_STORAGE_KEY = 'urban_wildlink_applications_v2'
 const PROPOSALS_STORAGE_KEY = 'urban_wildlink_species_proposals_v2'
-const ADMIN_AUTH_KEY = 'urban_wildlink_is_admin'
 const USERS_STORAGE_KEY = 'urban_wildlink_users_v3'
 const CURRENT_USER_KEY = 'urban_wildlink_current_user_v3'
-
-const defaultApplications = [
-  {
-    id: 'app-101',
-    applicantName: 'Emily Watson',
-    email: 'emily.watson@gmail.com',
-    postcode: '3150',
-    address: '12 Coleman Parade, Glen Waverley',
-    plantId: 'plant-1',
-    plantName: 'Golden Wattle',
-    quantity: 2,
-    gardenType: 'Suburban Backyard',
-    status: 'Approved',
-    submittedAt: '2026-08-24 10:30'
-  },
-  {
-    id: 'app-102',
-    applicantName: 'Marcus Chen',
-    email: 'marcus.chen@student.monash.edu',
-    postcode: '3168',
-    address: '45 Prince St, Clayton',
-    plantId: 'plant-2',
-    plantName: 'Silver Banksia',
-    quantity: 1,
-    gardenType: 'Balcony Garden',
-    status: 'Pending',
-    submittedAt: '2026-08-25 14:15'
-  }
-]
-
-const defaultProposals = [
-  {
-    id: 'prop-201',
-    proposerName: 'Marcus Chen',
-    email: 'marcus.chen@student.monash.edu',
-    plantName: 'Common Everlasting',
-    scientificName: 'Chrysocephalum apiculatum',
-    imageUrl:'https://www.gardensonline.com.au/Uploads/Product/5879/Chrysocephalum-Apiculatum-1b.jpg',
-    category: 'Wildflower',
-    wildlifeBenefit: 'Native Hoverflies & Small Bees',
-    reason: 'Hardy local butterfly host plant suited for Clayton clay soils.',
-    status: 'Pending',
-    submittedAt: '2026-08-26 09:40'
-  }
-]
-
-// Resident / Volunteer / Administrator
-const defaultUsers = [
-  {
-    id: 'user-admin',
-    fullName: 'Sarah Jenkins',
-    email: 'admin@wildlink.org.au',
-    password: 'Password123!',
-    role: 'Administrator',
-    createdAt: '2026-08-20'
-  },
-  {
-    id: 'user-volunteer',
-    fullName: 'David Miller',
-    email: 'volunteer@wildlink.org.au',
-    password: 'Password123!',
-    role: 'Volunteer',
-    createdAt: '2026-08-22'
-  },
-  {
-    id: 'user-resident',
-    fullName: 'Marcus Chen',
-    email: 'marcus.chen@student.monash.edu',
-    password: 'Password123!',
-    role: 'Resident',
-    createdAt: '2026-08-25'
-  }
-]
 
 function loadData(key, fallback) {
   const saved = localStorage.getItem(key)
@@ -98,7 +25,6 @@ function loadData(key, fallback) {
 
 // Global Reactive State
 const state = reactive({
-  isAdmin: false, 
   currentUser: loadData(CURRENT_USER_KEY, null),
   users: loadData(USERS_STORAGE_KEY, defaultUsers),
   plants: ensurePlantReviews(loadData(PLANTS_STORAGE_KEY, initialPlants)),
@@ -167,9 +93,29 @@ export const plantStore = {
     }
    // Login successful, update the current user's status
     state.currentUser = user
-    state.isAdmin = (user.role === 'Administrator')
     saveAll()
     return { success: true, message: `Welcome back, ${user.fullName}! Logged in as ${user.role}.`, user }
+  },
+
+  // 1b. Google OAuth Single Sign-On (BR D.1: Dual Authentication)
+  loginGoogleUser(googleUser) {
+    let user = state.users.find(u => u.email.toLowerCase() === googleUser.email.trim().toLowerCase())
+    if (!user) {
+      user = {
+        id: `user-google-${Date.now()}`,
+        fullName: googleUser.displayName || 'Google User',
+        email: googleUser.email.trim().toLowerCase(),
+        password: '',
+        role: 'Resident',
+        photoURL: googleUser.photoURL || '',
+        authProvider: 'google.com',
+        createdAt: new Date().toLocaleDateString()
+      }
+      state.users.push(user)
+    }
+    state.currentUser = user
+    saveAll()
+    return { success: true, message: `Welcome, ${user.fullName}! Signed in via Google.`, user }
   },
   // 2. New user registration (including role selection: Resident / Volunteer / Administrator)
   registerUser(userData) {
@@ -188,14 +134,12 @@ export const plantStore = {
     state.users.push(newUser)
     // Automatically log them in after successful registration
     state.currentUser = newUser
-    state.isAdmin = (newUser.role === 'Administrator')
     saveAll()
     return { success: true, message: 'Registration successful! Welcome to Urban WildLink.', user: newUser }
   },
   // 3. User logs out
   logoutUser() {
     state.currentUser = null
-    state.isAdmin = false
     saveAll()
   },
 
