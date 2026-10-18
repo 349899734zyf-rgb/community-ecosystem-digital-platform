@@ -97,6 +97,18 @@
                 Reserve Seat
               </button>
             </div>
+
+            <!-- Administrator Only: Delete Workshop Event (BR C.2 / F.1) -->
+            <div v-if="currentUser && currentUser.role === 'Administrator'" class="mt-3 pt-3 border-top">
+              <button 
+                type="button" 
+                class="btn btn-outline-danger btn-sm w-100 fw-bold d-flex align-items-center justify-content-center gap-1"
+                @click="handleDeleteEvent(selectedEvent.id)"
+                title="Remove this workshop event from community calendar"
+              >
+                <span>Delete Workshop Event</span>
+              </button>
+            </div>
           </div>
 
           <div v-else class="text-center text-muted py-5">
@@ -435,6 +447,35 @@ function cancelBooking(eventId) {
   syncCalendarEvents()
 
   showToast('Your reservation has been cancelled.', 'alert-info', 'bi-info-circle-fill')
+}
+
+// Administrator Delete Workshop Event (BR C.2 / F.1)
+function handleDeleteEvent(eventId) {
+  if (!currentUser.value || currentUser.value.role !== 'Administrator') {
+    showToast('Unauthorized: Only administrators can remove workshops.', 'alert-danger', 'bi-shield-exclamation')
+    return
+  }
+
+  const target = eventsData.value.find(e => e.id === eventId)
+  if (!target) return
+
+  // Remove from events dataset and persist to storage
+  eventsData.value = eventsData.value.filter(e => e.id !== eventId)
+  saveEventsToStorage(eventsData.value)
+
+  // Remove from local user booking records if booked
+  myBookedEvents.value = myBookedEvents.value.filter(b => b.id !== eventId)
+  localStorage.setItem('my_workshop_bookings', JSON.stringify(myBookedEvents.value))
+
+  // Re-synchronize FullCalendar dataset
+  syncCalendarEvents()
+
+  // Reset selected event drawer
+  const deletedTitle = target.title
+  selectedEvent.value = null
+
+  // Show Toast
+  showToast(`Workshop "${deletedTitle}" deleted successfully.`, 'alert-success', 'bi-check-circle-fill')
 }
 
 function showToast(msg, cls, icon) {
